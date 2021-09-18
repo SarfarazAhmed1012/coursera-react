@@ -1,18 +1,51 @@
 import * as ActionTypes from './ActionTypes';
-import { DISHES } from '../shared/dishes';
 import { baseUrl  } from '../shared/baseUrl'; // for communicating with the Servers
 
 // ACTION //
 // this action will return a plain JS object
-export const addComment = (dishId, rating, author, comment) => ({
+export const addComment = (comment) => ({
     type: ActionTypes.ADD_COMMENT, // this action type is being imported from Action Types, //  and all the actions like ADD_COMMENT can be used here
-    payload: {
+    payload: comment
+}); // Now we will send this action to the store, and we know it should be affecting the comments part of the state. 
+
+export const postComment = (dishId, rating, author, comment) => (dispatch) => {
+
+    const newComment = {
         dishId: dishId,
         rating: rating,
         author: author,
         comment: comment
-    }
-}); // Now we will send this action to the store, and we know it should be affecting the comments part of the state. 
+    };
+    newComment.date = new Date().toISOString();
+
+    return fetch(baseUrl + 'comments', { // For doing post methods
+        method: 'POST',
+        body: JSON.stringify(newComment),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+        .then(response => {
+            if (response.ok){
+                return response;
+            }
+            else{ // handling error here
+                var error = new Error('Error' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        }, // incase if server dont reponds 
+        error => {
+            var errmess = new Error(error.message);
+            throw errmess; // this var 'errmess' is would be used in dishesFailed Action below.
+        })
+        .then(response => response.json())
+        .then(response => dispatch(addComment(response)))
+        .catch(error => {console.log('Post Comments', error.message);
+                alert('your comment could not be posted\n Error: ' + error.message); })
+
+}
     
 
 // FOR DISHES  
@@ -27,7 +60,7 @@ export const fetchDishes = () => (dispatch) => {
     //     dispatch(addDishes(DISHES));
     // }, 2000);
 
-    return fetch(baseUrl + 'dishess') // we know dishes are accessible at localhost:3001
+    return fetch(baseUrl + 'dishes') // we know dishes are accessible at localhost:3001
         .then(response => {
             if (response.ok){
                 return response;
