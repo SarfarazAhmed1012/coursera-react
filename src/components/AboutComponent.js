@@ -1,23 +1,22 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { FadeTransform, Fade, Stagger } from 'react-animation-components';
+import { baseUrl } from "../shared/baseUrl";
 import { Link } from 'react-router-dom';
 import { Loading } from './LoadingComponent';
 
 function RenderLeader({leader}) {
     return (
-        <div key={leader.id} className="col-12 mt-5">
-            <Media tag="li">
-                <Media left middle >
-                    <Media object src ={leader.image} alt = {leader.name}/>
-                </Media>
-                <Media body className="col-12">
-                    <Media heading>{leader.name}</Media>
-                    <p>{leader.designation}</p>
-                    {leader.description}
-                </Media>
+        <Media className="mt-5">
+            <Media left className="mr-5">
+                <Media object src={baseUrl + leader.image} alt={leader.name} />
             </Media>
-        </div>
+            <Media body>
+                <Media heading>{leader.name}</Media>
+                <p>{leader.designation}</p>
+                {leader.description}
+            </Media>
+        </Media>
     );
 }
 
