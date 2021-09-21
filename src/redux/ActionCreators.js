@@ -46,7 +46,63 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
                 alert('your comment could not be posted\n Error: ' + error.message); })
 
 }
+
+export const postFeedback = (firstname, lastname, telnum, email, agree, contactType, message) => (dispatch) => {
+
+    const newFeedback = {
+        firstname: firstname,
+        lastname: lastname,
+        telnum: telnum,
+        email: email,
+        agree: agree,
+        contactType: contactType,
+        message: message,
+    }
+    newFeedback.date = new Date().toISOString();
+
+    return fetch(baseUrl + 'feedback', {
+        method: 'POST',
+        body: JSON.stringify(newFeedback),
+        headers: {
+            'Content-type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+        .then(response => {
+
+            if (response.ok) {
+
+                return response;
+            }
+            else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText)
+                error.response = response;
+                throw error;
+            }
+        },
+            ////if no responmse from server 
+            error => {
+                var errmess = new Error(error.message);
+                throw errmess;
+            }
+        )
+        .then(response => response.json())
+        .then(response => alert(JSON.stringify(response)))
+        .catch(error => {
+            console.log('Post Feedbacks', error.message);
+            alert('Feedback could not be posted\nError' + error.message);
+        });
+
+}
     
+
+
+export const addFeedback = (feedback) => ({
+    type: ActionTypes.ADD_FEEDBACKS, // this action type is being imported from Action Types, //  and all the actions like ADD_Feedback can be used here
+    payload: feedback
+});
+
+
 
 // FOR DISHES  
 export const fetchDishes = () => (dispatch) => {
