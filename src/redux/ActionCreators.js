@@ -173,3 +173,45 @@ export const addPromos = (promos) => ({
     type: ActionTypes.ADD_PROMOS,
     payload: promos
 });
+
+// FOR LEADERS
+
+export const fetchLeaders = () => (dispatch) => {
+
+    dispatch(leadersLoading(true));
+
+    return fetch(baseUrl + 'leaders') // we know promos are accessible at localhost:3001
+    .then(response => {
+        if (response.ok){
+            return response;
+        }
+        else{ // handling error here
+            var error = new Error('Error' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    }, // incase if server dont reponds 
+    error => {
+        var errmess = new Error(error.message);
+        throw errmess; // this var 'errmess' is would be used in dishesFailed Action below.
+    }
+    )
+        .then(response => response.json())
+        .then(promos => dispatch(addLeaders(promos)))
+        .catch(error => dispatch(leadersFailed(error.message)));
+
+}
+
+export const leadersLoading = () => ({
+    type: ActionTypes.LEADERS_LOADING
+});
+
+export const leadersFailed = (errmess) => ({
+    type: ActionTypes.LEADERS_FAILED,
+    payload: errmess
+});
+
+export const addLeaders = (leaders) => ({
+    type: ActionTypes.ADD_LEADERS,
+    payload: leaders
+});
